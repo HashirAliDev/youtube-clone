@@ -53,10 +53,38 @@ router.get('/video/:id', async (req, res) => {
         key: process.env.YOUTUBE_API_KEY
       }
     });
+
+    if (!response.data.items || response.data.items.length === 0) {
+      return res.status(404).json({ message: 'Video not found' });
+    }
+
     res.json(response.data);
   } catch (error) {
     console.error('Error fetching video:', error.response?.data || error.message);
     res.status(500).json({ message: 'Failed to fetch video details' });
+  }
+});
+
+// Get channel details
+router.get('/channel/:channelId', async (req, res) => {
+  try {
+    const { channelId } = req.params;
+    const response = await axios.get('https://www.googleapis.com/youtube/v3/channels', {
+      params: {
+        part: 'snippet,statistics',
+        id: channelId,
+        key: process.env.YOUTUBE_API_KEY
+      }
+    });
+
+    if (!response.data.items || response.data.items.length === 0) {
+      return res.status(404).json({ message: 'Channel not found' });
+    }
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching channel:', error.response?.data || error.message);
+    res.status(500).json({ message: 'Failed to fetch channel details' });
   }
 });
 
@@ -73,6 +101,11 @@ router.get('/related/:videoId', async (req, res) => {
         key: process.env.YOUTUBE_API_KEY
       }
     });
+
+    if (!response.data.items) {
+      return res.status(404).json({ message: 'No related videos found' });
+    }
+
     res.json(response.data);
   } catch (error) {
     console.error('Error fetching related videos:', error.response?.data || error.message);
