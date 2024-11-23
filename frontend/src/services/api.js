@@ -31,11 +31,20 @@ export const getTrendingVideos = () => api.get('/videos/trending');
 export const searchVideos = (query) => api.get(`/videos/search?query=${encodeURIComponent(query)}`);
 export const getVideoDetails = (videoId) => api.get(`/videos/video/${videoId}`);
 export const getRelatedVideos = (videoId) => api.get(`/videos/related/${videoId}`);
+export const getChannelDetails = (channelId) => api.get(`/videos/channel/${channelId}`);
 
 // User video interactions
 export const getSavedVideos = () => api.get('/videos/saved');
 export const saveVideo = (videoId) => api.post('/videos/save', { videoId });
 export const removeVideo = (videoId) => api.delete(`/videos/saved/${videoId}`);
+
+// Comment API calls
+export const getComments = (videoId) => api.get(`/comments/${videoId}`);
+export const addComment = (videoId, data) => api.post(`/comments/${videoId}`, data);
+export const updateComment = (commentId, data) => api.put(`/comments/${commentId}`, data);
+export const deleteComment = (commentId) => api.delete(`/comments/${commentId}`);
+export const likeComment = (commentId) => api.post(`/comments/${commentId}/like`);
+export const dislikeComment = (commentId) => api.post(`/comments/${commentId}/dislike`);
 
 // Error handler
 api.interceptors.response.use(
