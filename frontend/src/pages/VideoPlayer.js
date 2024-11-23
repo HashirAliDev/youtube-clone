@@ -35,9 +35,13 @@ function VideoPlayer() {
         setLoading(true);
         setError(null);
 
-        const [videoData, channelData, relatedData] = await Promise.all([
-          getVideoDetails(videoId),
-          getChannelDetails(videoData?.items[0]?.snippet?.channelId),
+        // First, get the video details
+        const videoData = await getVideoDetails(videoId);
+        
+        // Then use the channelId from videoData to get channel details
+        const channelId = videoData?.items[0]?.snippet?.channelId;
+        const [channelData, relatedData] = await Promise.all([
+          getChannelDetails(channelId),
           getRelatedVideos(videoId)
         ]);
 
