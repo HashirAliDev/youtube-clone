@@ -38,6 +38,15 @@ export const getSavedVideos = () => api.get('/videos/saved');
 export const saveVideo = (videoId) => api.post('/videos/save', { videoId });
 export const removeVideo = (videoId) => api.delete(`/videos/saved/${videoId}`);
 
+// Playlist API calls
+export const getPlaylists = () => api.get('/playlists');
+export const createPlaylist = (data) => api.post('/playlists', data);
+export const getPlaylistById = (playlistId) => api.get(`/playlists/${playlistId}`);
+export const updatePlaylist = (playlistId, data) => api.put(`/playlists/${playlistId}`, data);
+export const deletePlaylist = (playlistId) => api.delete(`/playlists/${playlistId}`);
+export const addVideoToPlaylist = (playlistId, videoId) => api.post(`/playlists/${playlistId}/videos`, { videoId });
+export const removeVideoFromPlaylist = (playlistId, videoId) => api.delete(`/playlists/${playlistId}/videos/${videoId}`);
+
 // Comment API calls
 export const getComments = (videoId) => api.get(`/comments/${videoId}`);
 export const addComment = (videoId, data) => api.post(`/comments/${videoId}`, data);
