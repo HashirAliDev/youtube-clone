@@ -15,10 +15,15 @@ router.get('/trending', async (req, res) => {
         key: process.env.YOUTUBE_API_KEY
       }
     });
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
     res.json(response.data);
   } catch (error) {
     console.error('Error fetching trending videos:', error.response?.data || error.message);
-    res.status(500).json({ message: 'Failed to fetch trending videos' });
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
+    res.status(500).json({ 
+      message: 'Failed to fetch trending videos',
+      error: error.response?.data || error.message 
+    });
   }
 });
 
@@ -35,10 +40,15 @@ router.get('/search', async (req, res) => {
         key: process.env.YOUTUBE_API_KEY
       }
     });
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
     res.json(response.data);
   } catch (error) {
     console.error('Error searching videos:', error.response?.data || error.message);
-    res.status(500).json({ message: 'Failed to search videos' });
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
+    res.status(500).json({ 
+      message: 'Failed to search videos',
+      error: error.response?.data || error.message 
+    });
   }
 });
 
@@ -71,6 +81,7 @@ router.get('/video/:id', async (req, res) => {
     }
 
     console.log('Successfully fetched video details');
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
     res.json(response.data);
   } catch (error) {
     console.error('Error fetching video:', {
@@ -88,9 +99,10 @@ router.get('/video/:id', async (req, res) => {
       });
     }
 
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
     res.status(500).json({ 
       message: 'Failed to fetch video details',
-      details: error.message 
+      error: error.response?.data || error.message 
     });
   }
 });
@@ -124,26 +136,14 @@ router.get('/channel/:channelId', async (req, res) => {
     }
 
     console.log('Successfully fetched channel details');
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
     res.json(response.data);
   } catch (error) {
-    console.error('Error fetching channel:', {
-      channelId,
-      error: error.message,
-      response: error.response?.data,
-      status: error.response?.status
-    });
-
-    // Check if it's a YouTube API error
-    if (error.response?.data?.error) {
-      return res.status(error.response.status).json({
-        message: error.response.data.error.message,
-        code: error.response.data.error.code
-      });
-    }
-
+    console.error('Error fetching channel details:', error.response?.data || error.message);
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
     res.status(500).json({ 
       message: 'Failed to fetch channel details',
-      details: error.message 
+      error: error.response?.data || error.message 
     });
   }
 });
@@ -179,26 +179,14 @@ router.get('/related/:videoId', async (req, res) => {
     }
 
     console.log(`Found ${response.data.items.length} related videos`);
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
     res.json(response.data);
   } catch (error) {
-    console.error('Error fetching related videos:', {
-      videoId,
-      error: error.message,
-      response: error.response?.data,
-      status: error.response?.status
-    });
-    
-    // Check if it's a YouTube API error
-    if (error.response?.data?.error) {
-      return res.status(error.response.status).json({
-        message: error.response.data.error.message,
-        code: error.response.data.error.code
-      });
-    }
-    
+    console.error('Error fetching related videos:', error.response?.data || error.message);
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
     res.status(500).json({ 
       message: 'Failed to fetch related videos',
-      details: error.message 
+      error: error.response?.data || error.message 
     });
   }
 });
@@ -234,9 +222,11 @@ router.post('/save', auth, async (req, res) => {
     });
 
     await user.save();
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
     res.json(user.savedVideos);
   } catch (error) {
     console.error('Error saving video:', error);
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
     res.status(500).json({ message: 'Failed to save video' });
   }
 });
@@ -245,9 +235,11 @@ router.post('/save', auth, async (req, res) => {
 router.get('/saved', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
     res.json(user.savedVideos);
   } catch (error) {
     console.error('Error fetching saved videos:', error);
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
     res.status(500).json({ message: 'Failed to fetch saved videos' });
   }
 });
@@ -260,9 +252,11 @@ router.delete('/saved/:videoId', auth, async (req, res) => {
       video => video.videoId !== req.params.videoId
     );
     await user.save();
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
     res.json(user.savedVideos);
   } catch (error) {
     console.error('Error removing saved video:', error);
+    res.header('Access-Control-Allow-Origin', 'https://youtube-clone-frontend-3fx5.onrender.com');
     res.status(500).json({ message: 'Failed to remove video' });
   }
 });
