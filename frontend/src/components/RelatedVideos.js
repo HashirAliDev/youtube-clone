@@ -34,8 +34,16 @@ function RelatedVideos({ videos, loading, error }) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {videos.map((video) => (
-        <Box key={video.id} sx={{ maxWidth: '100%' }}>
-          <VideoCard video={video} />
+        <Box 
+          key={typeof video.id === 'object' ? video.id.videoId : video.id} 
+          sx={{ maxWidth: '100%' }}
+        >
+          <VideoCard 
+            video={{
+              ...video,
+              statistics: video.statistics || {}
+            }} 
+          />
         </Box>
       ))}
     </Box>

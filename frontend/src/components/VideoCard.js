@@ -29,7 +29,9 @@ function VideoCard({ video }) {
   } = video;
 
   const handleClick = () => {
-    navigate(`/watch/${id}`);
+    // Handle both direct video ID and search result ID object
+    const videoId = typeof id === 'object' ? id.videoId : id;
+    navigate(`/watch/${videoId}`);
   };
 
   const formatViewCount = (count) => {
