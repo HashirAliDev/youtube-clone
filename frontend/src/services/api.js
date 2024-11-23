@@ -74,8 +74,23 @@ export const getSubscribers = () => api.get('/subscriptions/subscribers');
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    console.error('API Error:', error.response?.data || error.message);
-    throw error.response?.data || error;
+    // Log the complete error for debugging
+    console.error('API Error:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      url: error.config?.url
+    });
+
+    // Format error response
+    const errorResponse = {
+      message: error.response?.data?.message || error.message,
+      code: error.response?.status,
+      details: error.response?.data?.details || null
+    };
+
+    // Throw formatted error
+    throw errorResponse;
   }
 );
 

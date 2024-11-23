@@ -37,26 +37,46 @@ function VideoPlayer() {
 
         // First, get the video details
         const videoData = await getVideoDetails(videoId);
-        
+        if (!videoData?.items?.length) {
+          setError('Video not found');
+          return;
+        }
+
         // Then use the channelId from videoData to get channel details
-        const channelId = videoData?.items[0]?.snippet?.channelId;
+        const channelId = videoData.items[0]?.snippet?.channelId;
+        if (!channelId) {
+          setError('Invalid video data');
+          return;
+        }
+
+        // Fetch channel and related videos in parallel
         const [channelData, relatedData] = await Promise.all([
           getChannelDetails(channelId),
           getRelatedVideos(videoId)
         ]);
 
+        // Validate channel data
+        if (!channelData?.items?.length) {
+          setError('Channel not found');
+          return;
+        }
+
         setVideo(videoData.items[0]);
         setChannel(channelData.items[0]);
-        setRelatedVideos(relatedData.items);
+        setRelatedVideos(relatedData?.items || []);
       } catch (err) {
         console.error('Error loading video:', err);
-        setError('Failed to load video content');
+        setError(err.message || 'Failed to load video content');
       } finally {
         setLoading(false);
       }
     };
 
-    loadVideoData();
+    if (videoId) {
+      loadVideoData();
+    } else {
+      setError('Video ID is required');
+    }
   }, [videoId]);
 
   if (loading) {
