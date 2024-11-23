@@ -113,7 +113,7 @@ function VideoPlayer() {
     <Grid container spacing={3}>
       <Grid item xs={12} md={8}>
         {/* Video Player */}
-        <Box sx={{ position: 'relative', paddingTop: '56.25%' }}>
+        <Box sx={{ position: 'relative', paddingTop: '56.25%', bgcolor: 'black' }}>
           <ReactPlayer
             url={`https://www.youtube.com/watch?v=${videoId}`}
             width="100%"
@@ -121,6 +121,22 @@ function VideoPlayer() {
             style={{ position: 'absolute', top: 0, left: 0 }}
             controls
             playing
+            config={{
+              youtube: {
+                playerVars: {
+                  autoplay: 1,
+                  modestbranding: 1,
+                  rel: 0,
+                  showinfo: 1,
+                  origin: window.location.origin
+                }
+              }
+            }}
+            onError={(e) => {
+              console.error('Video playback error:', e);
+              setError('Failed to play video. Please try again later.');
+            }}
+            onReady={() => setLoading(false)}
           />
         </Box>
 
