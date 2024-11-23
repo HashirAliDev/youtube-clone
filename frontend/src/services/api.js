@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 // Create axios instance with base URL
 const api = axios.create({
@@ -8,6 +8,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 10000, // 10 second timeout
 });
 
 // Add token to requests if available
@@ -17,6 +18,8 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
+}, (error) => {
+  return Promise.reject(error);
 });
 
 // Auth API calls
@@ -70,27 +73,25 @@ export const subscribe = (channelId) => api.post(`/subscriptions/${channelId}`);
 export const unsubscribe = (channelId) => api.delete(`/subscriptions/${channelId}`);
 export const getSubscribers = () => api.get('/subscriptions/subscribers');
 
-// Error handler
+// Response interceptor for better error handling
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    // Log the complete error for debugging
-    console.error('API Error:', {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status,
-      url: error.config?.url
-    });
-
-    // Format error response
-    const errorResponse = {
-      message: error.response?.data?.message || error.message,
-      code: error.response?.status,
-      details: error.response?.data?.details || null
-    };
-
-    // Throw formatted error
-    throw errorResponse;
+    if (error.response) {
+      // Server responded with error status
+      const message = error.response.data?.message || 'An error occurred';
+      if (error.response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
+      return Promise.reject({ message, status: error.response.status });
+    } else if (error.request) {
+      // Request made but no response
+      return Promise.reject({ message: 'Server not responding', status: 503 });
+    } else {
+      // Request setup error
+      return Promise.reject({ message: error.message, status: 500 });
+    }
   }
 );
 

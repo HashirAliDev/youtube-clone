@@ -46,6 +46,12 @@ router.get('/search', async (req, res) => {
 router.get('/video/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    console.log('Fetching video details for:', id);
+
+    if (!id) {
+      return res.status(400).json({ message: 'Video ID is required' });
+    }
+
     const response = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
       params: {
         part: 'snippet,contentDetails,statistics',
@@ -54,14 +60,38 @@ router.get('/video/:id', async (req, res) => {
       }
     });
 
+    if (!response.data) {
+      console.error('No data received from YouTube API');
+      return res.status(500).json({ message: 'No response from YouTube API' });
+    }
+
     if (!response.data.items || response.data.items.length === 0) {
+      console.log('Video not found:', id);
       return res.status(404).json({ message: 'Video not found' });
     }
 
+    console.log('Successfully fetched video details');
     res.json(response.data);
   } catch (error) {
-    console.error('Error fetching video:', error.response?.data || error.message);
-    res.status(500).json({ message: 'Failed to fetch video details' });
+    console.error('Error fetching video:', {
+      videoId: id,
+      error: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
+
+    // Check if it's a YouTube API error
+    if (error.response?.data?.error) {
+      return res.status(error.response.status).json({
+        message: error.response.data.error.message,
+        code: error.response.data.error.code
+      });
+    }
+
+    res.status(500).json({ 
+      message: 'Failed to fetch video details',
+      details: error.message 
+    });
   }
 });
 
@@ -69,6 +99,12 @@ router.get('/video/:id', async (req, res) => {
 router.get('/channel/:channelId', async (req, res) => {
   try {
     const { channelId } = req.params;
+    console.log('Fetching channel details for:', channelId);
+
+    if (!channelId) {
+      return res.status(400).json({ message: 'Channel ID is required' });
+    }
+
     const response = await axios.get('https://www.googleapis.com/youtube/v3/channels', {
       params: {
         part: 'snippet,statistics',
@@ -77,14 +113,38 @@ router.get('/channel/:channelId', async (req, res) => {
       }
     });
 
+    if (!response.data) {
+      console.error('No data received from YouTube API');
+      return res.status(500).json({ message: 'No response from YouTube API' });
+    }
+
     if (!response.data.items || response.data.items.length === 0) {
+      console.log('Channel not found:', channelId);
       return res.status(404).json({ message: 'Channel not found' });
     }
 
+    console.log('Successfully fetched channel details');
     res.json(response.data);
   } catch (error) {
-    console.error('Error fetching channel:', error.response?.data || error.message);
-    res.status(500).json({ message: 'Failed to fetch channel details' });
+    console.error('Error fetching channel:', {
+      channelId,
+      error: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
+
+    // Check if it's a YouTube API error
+    if (error.response?.data?.error) {
+      return res.status(error.response.status).json({
+        message: error.response.data.error.message,
+        code: error.response.data.error.code
+      });
+    }
+
+    res.status(500).json({ 
+      message: 'Failed to fetch channel details',
+      details: error.message 
+    });
   }
 });
 
@@ -92,6 +152,12 @@ router.get('/channel/:channelId', async (req, res) => {
 router.get('/related/:videoId', async (req, res) => {
   try {
     const { videoId } = req.params;
+    console.log('Fetching related videos for:', videoId);
+    
+    if (!videoId) {
+      return res.status(400).json({ message: 'Video ID is required' });
+    }
+
     const response = await axios.get('https://www.googleapis.com/youtube/v3/search', {
       params: {
         part: 'snippet',
@@ -102,14 +168,38 @@ router.get('/related/:videoId', async (req, res) => {
       }
     });
 
+    if (!response.data) {
+      console.error('No data received from YouTube API');
+      return res.status(500).json({ message: 'No response from YouTube API' });
+    }
+
     if (!response.data.items) {
+      console.log('No related videos found for:', videoId);
       return res.status(404).json({ message: 'No related videos found' });
     }
 
+    console.log(`Found ${response.data.items.length} related videos`);
     res.json(response.data);
   } catch (error) {
-    console.error('Error fetching related videos:', error.response?.data || error.message);
-    res.status(500).json({ message: 'Failed to fetch related videos' });
+    console.error('Error fetching related videos:', {
+      videoId,
+      error: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
+    
+    // Check if it's a YouTube API error
+    if (error.response?.data?.error) {
+      return res.status(error.response.status).json({
+        message: error.response.data.error.message,
+        code: error.response.data.error.code
+      });
+    }
+    
+    res.status(500).json({ 
+      message: 'Failed to fetch related videos',
+      details: error.message 
+    });
   }
 });
 

@@ -13,9 +13,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://youtube-clone-frontend-3fx5.onrender.com', 'http://localhost:3000']
-    : 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true
 }));
 app.use(express.json());
@@ -26,7 +24,8 @@ app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
     message: 'Server is healthy',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
   });
 });
 
@@ -37,8 +36,12 @@ app.use('/api/users', userRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+  console.error('Error:', err);
+  res.status(err.status || 500).json({ 
+    message: err.message || 'Something went wrong!',
+    status: err.status || 500,
+    path: req.path
+  });
 });
 
 // Connect to MongoDB
@@ -53,5 +56,5 @@ mongoose
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
 });
