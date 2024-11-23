@@ -14,7 +14,7 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://youtube-clone-frontend.onrender.com', 'http://localhost:3000']
+    ? ['https://youtube-clone-frontend-3fx5.onrender.com', 'http://localhost:3000']
     : 'http://localhost:3000',
   credentials: true
 }));
