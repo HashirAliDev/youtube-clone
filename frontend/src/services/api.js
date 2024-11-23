@@ -25,6 +25,8 @@ api.interceptors.request.use((config) => {
 export const login = (credentials) => api.post('/auth/login', credentials);
 export const register = (userData) => api.post('/auth/register', userData);
 export const getCurrentUser = () => api.get('/auth/me');
+export const getUserProfile = () => api.get('/auth/profile');
+export const updateUserProfile = (data) => api.put('/auth/profile', data);
 
 // Video API calls
 export const getTrendingVideos = () => api.get('/videos/trending');
@@ -32,11 +34,17 @@ export const searchVideos = (query) => api.get(`/videos/search?query=${encodeURI
 export const getVideoDetails = (videoId) => api.get(`/videos/video/${videoId}`);
 export const getRelatedVideos = (videoId) => api.get(`/videos/related/${videoId}`);
 export const getChannelDetails = (channelId) => api.get(`/videos/channel/${channelId}`);
+export const uploadVideo = (formData) => api.post('/videos/upload', formData);
+export const updateVideo = (videoId, data) => api.put(`/videos/${videoId}`, data);
+export const deleteVideo = (videoId) => api.delete(`/videos/${videoId}`);
 
 // User video interactions
 export const getSavedVideos = () => api.get('/videos/saved');
 export const saveVideo = (videoId) => api.post('/videos/save', { videoId });
 export const removeVideo = (videoId) => api.delete(`/videos/saved/${videoId}`);
+export const likeVideo = (videoId) => api.post(`/videos/${videoId}/like`);
+export const dislikeVideo = (videoId) => api.post(`/videos/${videoId}/dislike`);
+export const getLikedVideos = () => api.get('/videos/liked');
 
 // Playlist API calls
 export const getPlaylists = () => api.get('/playlists');
@@ -46,6 +54,7 @@ export const updatePlaylist = (playlistId, data) => api.put(`/playlists/${playli
 export const deletePlaylist = (playlistId) => api.delete(`/playlists/${playlistId}`);
 export const addVideoToPlaylist = (playlistId, videoId) => api.post(`/playlists/${playlistId}/videos`, { videoId });
 export const removeVideoFromPlaylist = (playlistId, videoId) => api.delete(`/playlists/${playlistId}/videos/${videoId}`);
+export const getUserPlaylists = () => api.get('/playlists/user');
 
 // Comment API calls
 export const getComments = (videoId) => api.get(`/comments/${videoId}`);
@@ -54,6 +63,14 @@ export const updateComment = (commentId, data) => api.put(`/comments/${commentId
 export const deleteComment = (commentId) => api.delete(`/comments/${commentId}`);
 export const likeComment = (commentId) => api.post(`/comments/${commentId}/like`);
 export const dislikeComment = (commentId) => api.post(`/comments/${commentId}/dislike`);
+export const getCommentReplies = (commentId) => api.get(`/comments/${commentId}/replies`);
+export const addCommentReply = (commentId, data) => api.post(`/comments/${commentId}/replies`, data);
+
+// Subscription API calls
+export const getSubscriptions = () => api.get('/subscriptions');
+export const subscribe = (channelId) => api.post(`/subscriptions/${channelId}`);
+export const unsubscribe = (channelId) => api.delete(`/subscriptions/${channelId}`);
+export const getSubscribers = () => api.get('/subscriptions/subscribers');
 
 // Error handler
 api.interceptors.response.use(
